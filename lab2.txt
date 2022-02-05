@@ -1,0 +1,350 @@
+//ONE BIT FULL ADDER BEHAVIORAL
+//design file
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 18.10.2021 23:24:53
+// Design Name: 
+// Module Name: twobit_bhv
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+module onebit_fulladder_behavioral(input logic a, b, cin,
+    output logic sum, cout);
+assign sum =  (a ^ b) ^ cin;
+assign cout = a & b | cin & (a ^ b);
+endmodule
+
+//simulation file
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 18.10.2021 23:25:38
+// Design Name: 
+// Module Name: test
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module test_onebit_fulladder_behavioral();
+logic a, b, cin;
+logic sum, cout;
+onebit_fulladder_behavioral dut(a, b, cin, sum, cout);
+initial begin
+a = 0; b = 0; cin = 0; #10;
+cin = 1; #10;
+b = 1; cin = 0; #10;
+cin = 1; #10;
+a = 1; b = 0; cin = 0; #10;
+cin = 1; #10;
+b = 1 ; cin = 0; #10;
+cin = 1; #10;
+end
+endmodule
+
+
+//ONE BIT FULL ADDER STRUCTURAL
+//design file
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 18.10.2021 21:08:51
+// Design Name: 
+// Module Name: onebit
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+module onebit_fulladder_structural(input logic a, b, cin,
+   				 output logic sum, cout);
+logic xor1, and1, and2;
+xor  ( xor1 , a, b);
+and  (and1, cin, xor1);
+xor (sum, xor1 , cin);
+and (and2, a, b);
+or  (cout, and1, and2);
+endmodule
+
+
+//simulation file
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 18.10.2021 21:09:43
+// Design Name: 
+// Module Name: test
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: Created
+// 
+// Revision:
+// Revision 0.01 - File 
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+module test_onebit_fulladder_structural();
+logic a, b, cin;
+logic sum, cout;
+onebit_fulladder_structural dut(a, b, cin, sum, cout);
+initial begin
+a = 0; b = 0; cin = 0; #10;
+cin = 1; #10;
+b = 1; cin = 0; #10;
+cin = 1; #10;
+a = 1; b = 0; cin = 0; #10;
+cin = 1; #10;
+b = 1 ; cin = 0; #10;
+cin = 1; #10;
+end
+endmodule
+
+
+
+//TWO BIT FULL ADDER STRUCTURAL
+//design file
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 18.10.2021 22:03:32
+// Design Name: 
+// Module Name: twobit_fulladder
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+module onebit_fulladder_structural(input logic a, b, cin,
+   				 output logic sum, cout);
+logic xor1, and1, and2;
+xor  ( xor1 , a, b);
+and  (and1, cin, xor1);
+xor (sum, xor1 , cin);
+and (and2, a, b);
+or  (cout, and1, and2);
+endmodule
+
+module twobits_fulladder_structural(input logic a1, a0, b1, b0, c0in,
+   			    output logic sum0, sum1,  c1out);
+logic c0out;
+onebit_fulladder_structural f1( a0, b0, c0in, sum0, c0out);
+onebit_fulladder_structural f2( a1, b1, c0out, sum1, c1out);
+endmodule
+
+
+//simulation file
+module test_twobits_fulladder_structural();
+logic a0, a1, b0, b1, c0in;
+logic sum0, sum1, c1out;
+twobits_fulladder_structural dut( a1, a0, b1, b0, c0in, sum0, sum1,  c1out);
+initial begin
+a1 = 0; a0 = 0; b1 = 0; b0 = 0; c0in = 0; #10;
+b0 = 1;#10;
+a0 = 1; b1 = 0;#10;
+b0 = 1; #10;
+
+a0 = 0; b1 = 1; b0 = 0; #10;
+b0 = 1; #10;
+a0 = 1; b0 = 0;#10;
+b0 = 1; #10;
+
+a1 = 1; a0 = 0; b1 = 0; b0 = 0; #10;
+b0 = 1;#10;
+a0 = 1; b0 = 0;#10;
+b0 = 1; 
+
+a0 = 0; b1 = 1; b0 = 0; #10;
+b0 = 1; #10;
+a0 = 1; b0 = 0; #10;
+b0 = 1; #10;
+
+a1 = 0; a0 = 0; b1 = 0; b0 = 0; c0in = 1;#10;
+b0 = 1;#10;
+a0 = 1; b0 = 0; #10;
+b0 = 1; #10;
+
+a0 = 0; b1 = 1; b0 = 0;#10;
+b0 = 1; #10;
+a0 = 1;  b0 = 0; #10;
+b0 = 1; #10;
+
+a1 = 1; a0 = 0; b1 = 0; b0 = 0; #10;
+b0 = 1; #10;
+a0 = 1;  b0 = 0; #10;
+b0 = 1; #10;
+
+a0 = 0; b1 = 1; b0 = 0; #10;
+b0 = 1; #10;
+a0 = 1; b0 = 0; #10;
+b0 = 1; #10;
+
+end 
+endmodule
+
+//LAB CALCULATOR
+//design file
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 19.10.2021 00:27:37
+// Design Name: 
+// Module Name: main
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module labcalc(input logic a, b, c, d,
+                output logic y, z);
+logic n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n12, n13, n14, n15, n16, n17, n18, n19;
+logic n20, n21, n22, n23, n24;
+
+//and
+and(n1, a, b);
+not( n2, c);
+not(n3, d);
+and(n4, n2, n3);
+and(n5, n4, n1);
+
+//nor
+nor(n6, a, b);
+not(n7, c);
+and(n9, d, n7);
+and(n8 , n6, n9);
+or(n10, n5, n8 );
+
+//half adder
+xor (n12, a, b);
+and (n14, a, b);
+not (n17, d);
+and(n18, c, n17);
+and(n15, n18, n14);
+and(n13, n18, n12);
+
+//half subtractor
+xor(n19, a, b);
+not(n20, a);
+and(n22, b, n20);
+and(n23, c, d);
+and(n24, n23, n22);
+and(n21, n23, n19);
+
+//adding the results
+or(n16, n21, n13);
+or (y, n16, n10);
+or(z, n24, n15);
+
+endmodule
+
+
+//simulation file
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 19.10.2021 00:28:28
+// Design Name: 
+// Module Name: bench
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module test_labcalc();
+logic a, b, c, d;
+logic y, z;
+labcalc dut(a, b, c, d, y, z);
+initial begin
+a = 0; b = 0; c = 0; d = 0; #10;
+a = 0; b = 1; c = 0; d = 0; #10;
+a = 1; b = 0; c = 0; d = 0; #10;
+a = 1; b = 1; c = 0; d = 0; #10;
+
+a = 0; b = 0; c = 0; d = 1; #10;
+a = 0; b = 1; c = 0; d = 1; #10;
+a = 1; b = 0; c = 0; d = 1; #10;
+a = 1; b = 1; c = 0; d = 1; #10;
+
+a = 0; b = 0; c = 1; d = 0; #10;
+a = 0; b = 1; c = 1; d = 0; #10;
+a = 1; b = 0; c = 1; d = 0; #10;
+a = 1; b = 1; c = 1; d = 0; #10;
+
+a = 0; b = 0; c = 1; d = 1; #10;
+a = 0; b = 1; c = 1; d = 1; #10;
+a = 1; b = 0; c = 1; d = 1; #10;
+a = 1; b = 1; c = 1; d = 1; #10;
+end
+endmodule
+

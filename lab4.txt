@@ -1,0 +1,164 @@
+//2:1 mux
+module twoToOne_mux (input logic i1, i2, s, 
+        output logic y);
+logic not1, and1,  and2;
+not(not1, s);
+and(and1, not1, i1);
+and(and2, s, i2);
+or(y, and1, and2);
+endmodule
+
+ //4:1 mux
+module fourToOne_mux(input logic i1, i2, i3, i4, s0, s1, 
+output logic y);
+    logic mux1, mux2;
+   twoToOne_mux m1(i1, i2, s0, mux1);
+   twoToOne_mux m2(i3, i4, s0, mux2);
+   twoToOne_mux m3(mux2, mux1, s1, y);
+endmodule
+
+//multi register flip flop
+module fflop(input logic clk, input logic reset, input logic [3:0] d,
+ output logic [3:0] q);
+ always_ff @(posedge clk)
+ 	if (reset) 
+    q <= 4'b0; 
+    else q <= d; 
+endmodule
+module mfreg(input logic s1, s0, d0, d1, d2, d3,  clock, reset, shr_in, shl_in,
+output logic y0, y1, y2, y3);
+    logic n1, n2, n3, n4;
+    logic clock_div;
+    
+    clockDiv div (clock,clock_div);
+    fourToOne_mux m1 (y2, shr_in, d3, y3, s0, s1, n4);
+    fourToOne_mux m2 (y1, y3, d2, y2, s0, s1, n3);
+    fourToOne_mux m3 (y0, y2, d1, y1, s0, s1, n2);
+    fourToOne_mux m4 (shl_in, y1, d0, y0, s0, s1, n1);
+    
+    fflop f1(clock_div, reset, n4, y3);
+    fflop f2(clock_div, reset, n3, y2);
+    fflop f3(clock_div, reset, n2, y1);
+    fflop f4(clock_div, reset, n1, y0);
+endmodule
+
+//clock div
+module clockDiv(input logic clk, output logic clkScnd);
+    logic [31:0] counter = 1;
+    localparam limit = 20000000;
+    logic clk_temp = 0;
+
+    always@(posedge clk)
+        begin
+            if(counter == limit)
+        begin
+            counter <= 1;
+            clk_temp = ~clk_temp;
+        end 
+        else
+            counter <= counter + 1;
+        end
+        assign clkScnd = clk_temp;
+endmodule 
+//testbench
+
+module test_reg();
+    logic  d0, d1, d2, d3, s0, s1, clock, reset, shr_in, shl_in, y0, y1, y2, y3;
+    mfreg def(d0, d1 ,d2, d3, s1, s0, clock, reset, shr_in, shl_in, y0, y1, y2, y3);
+    
+    always 
+    begin
+    clock =1 ; #5 clock = 0; #5;
+    end 
+    initial begin
+    s1 = 0; s1 = 1; shr_in = 0; shl_in = 0; #10;
+    reset = 1; #10;
+    reset = 0;
+    s1 = 0; s0 = 0; #20;
+    s1 = 0; s0 =1; #10;
+    
+ 
+    d0 = 0; d1 = 0; d2 = 0; d3 = 0; #10;
+    d0 = 0; d1 = 0; d2 = 0; d3 = 1; #10;
+    d0 = 0; d1 = 0; d2 = 1; d3 = 0; #10;
+    d0 = 0; d1 = 0; d2 = 1; d3 = 1; #10;
+    d0 = 0; d1 = 1; d2 = 0; d3 = 0; #10;
+    d0 = 0; d1 = 1; d2 = 0; d3 = 1; #10;
+    d0 = 0; d1 = 1; d2 = 1; d3 = 0; #10;
+    d0 = 0; d1 = 1; d2 = 1; d3 = 1; #10;
+    d0 = 1; d1 = 0; d2 = 0; d3 = 0; #10;
+    d0 = 1; d1 = 0; d2 = 0; d3 = 1; #10;
+    d0 = 1; d1 = 0; d2 = 1; d3 = 0; #10;
+    d0 = 1; d1 = 0; d2 = 1; d3 = 1; #10;
+    d0 = 1; d1 = 1; d2 = 0; d3 = 0; #10;
+    d0 = 1; d1 = 1; d2 = 0; d3 = 1; #10;
+    d0 = 1; d1 = 1; d2 = 1; d3 = 0; #10;
+    d0 = 1; d1 = 1; d2 = 1; d3 = 1; #10;
+      
+    d0=0; d1=0; d2=0; d3=0; #10;
+    d0=0; d1=0; d2=0; d3=1; #10;
+    d0=0; d1=0; d2=1; d3=0; #10;
+    d0=0; d1=0; d2=1; d3=1; #10;
+    d0=0; d1=1; d2=0; d3=0; #10;
+    d0=0; d1=1; d2=0; d3=1; #10;
+    d0=0; d1=1; d2=1; d3=0; #10;
+    d0=0; d1=1; d2=1; d3=1; #10;
+    d0=1; d1=0; d2=0; d3=0; #10;
+    d0=1; d1=0; d2=0; d3=1; #10;
+    d0=1; d1=0; d2=1; d3=0; #10;
+    d0=1; d1=0; d2=1; d3=1; #10;
+    d0=1; d1=1; d2=0; d3=0; #10;
+    d0=1; d1=1; d2=0; d3=1; #10;
+    d0=1; d1=1; d2=1; d3=0; #10;
+    d0=1; d1=1; d2=1; d3=1; #10;
+    
+    
+    d0 = 0; d1 = 0; d2 = 0; d3 = 0; #10;
+    d0=0; d1=0; d2=0; d3=1; #10;
+    d0=0; d1=0; d2=1; d3=0; #10;
+    d0=0; d1=0; d2=1; d3=1; #10;
+    d0=0; d1=1; d2=0; d3=0; #10;
+    d0=0; d1=1; d2=0; d3=1; #10;
+    d0=0; d1=1; d2=1; d3=0; #10;
+    d0=0; d1=1; d2=1; d3=1; #10;
+    d0=1; d1=0; d2=0; d3=0; #10;
+    d0=1; d1=0; d2=0; d3=1; #10;
+    d0=1; d1=0; d2=1; d3=0; #10;
+    d0=1; d1=0; d2=1; d3=1; #10;
+    d0=1; d1=1; d2=0; d3=0; #10;
+    d0=1; d1=1; d2=0; d3=1; #10;
+    d0=1; d1=1; d2=1; d3=0; #10;
+    d0=1; d1=1; d2=1; d3=1; #10;
+
+    d0=0; d1=0; d2=0; d3=0; #10;
+    d0=0; d1=0; d2=0; d3=1; #10;
+    d0=0; d1=0; d2=1; d3=0; #10;
+    d0=0; d1=0; d2=1; d3=1; #10;
+    d0=0; d1=1; d2=0; d3=0; #10;
+    d0=0; d1=1; d2=0; d3=1; #10;
+    d0=0; d1=1; d2=1; d3=0; #10;
+    d0=0; d1=1; d2=1; d3=1; #10;
+    d0=1; d1=0; d2=0; d3=0; #10;
+    d0=1; d1=0; d2=0; d3=1; #10;
+    d0=1; d1=0; d2=1; d3=0; #10;
+    d0=1; d1=0; d2=1; d3=1; #10;
+    d0=1; d1=1; d2=0; d3=0; #10;
+    d0=1; d1=1; d2=0; d3=1; #10;
+    d0=1; d1=1; d2=1; d3=0; #10;
+    d0 = 1; d1 = 1; d2 = 1; d3 = 1; #10;
+    
+    s1 = 0; s0 = 1; #10;
+    d3 = 0; d2 = 0; d1 = 0 ; d0 = 1; #10;
+    s1 = 1; s0 = 0;#40;
+    shr_in = 1;
+    d1 = 1; d3 = 1; d2 = 0; #10;
+    s1 = 1; s0 = 1; #10;
+    d1 = 0; d0 = 1; #10;
+    shl_in = 1; #30;
+    s1 = 0; s0 = 1; d1 = 1; d3 = 1; #10;
+    s1 =1; s0 = 0; #10;
+    shr_in = 0;
+        
+    s1 = 0; s0 = 0;
+      end
+endmodule
